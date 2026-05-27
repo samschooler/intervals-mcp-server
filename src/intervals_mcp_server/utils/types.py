@@ -92,6 +92,7 @@ class ValueUnits(Enum):
     MINS_KM = "MINS_KM"
     MINS_MILE = "MINS_MILE"
     SECS_100M = "SECS_100M"
+    SECS_100Y = "SECS_100Y"
     SECS_500M = "SECS_500M"
 
 
