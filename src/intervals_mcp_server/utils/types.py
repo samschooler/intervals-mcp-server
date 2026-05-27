@@ -386,9 +386,9 @@ class Step:  # pylint: disable=too-many-instance-attributes
 
     def __str__(self) -> str:
         """Convert Step to string representation."""
-        return self._to_str()
+        return self.to_str()
 
-    def _to_str(self, nested: bool = False, pace_units=None) -> str:  # pylint: disable=too-many-branches
+    def to_str(self, nested: bool = False, pace_units=None) -> str:  # pylint: disable=too-many-branches
         """Convert Step to string representation.
 
         Many branches are required to format all optional fields and handle different step types.
@@ -435,7 +435,7 @@ class Step:  # pylint: disable=too-many-instance-attributes
             for step in self.steps:
                 # Using _to_str instead of __str__ because we need the nested=True arg;
                 # __str__ can't accept extra parameters.
-                val += "\n" + step._to_str(nested=True, pace_units=pace_units)  # pylint: disable=protected-access
+                val += "\n" + step.to_str(nested=True, pace_units=pace_units)
             val += "\n"
         elif not nested and (self.warmup or self.cooldown):
             val += "\n"
@@ -589,5 +589,5 @@ class WorkoutDoc:  # pylint: disable=too-many-instance-attributes
             val += f"{self.description}\n"
         if self.steps is not None:
             for step in self.steps:
-                val += step._to_str(pace_units=self.pace_units) + "\n"  # pylint: disable=protected-access
+                val += step.to_str(pace_units=self.pace_units) + "\n"
         return val
