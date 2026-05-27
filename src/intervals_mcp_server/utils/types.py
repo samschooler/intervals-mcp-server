@@ -374,10 +374,12 @@ class Step:  # pylint: disable=too-many-instance-attributes
             val += f"{remaining_duration}s"
         return val
 
-    def _format_distance(self) -> str:
+    def _format_distance(self, pace_units=None) -> str:
         """Format distance into a human-readable string."""
         if self.distance is None:
             return ""
+        if pace_units == PaceUnits.SECS_100Y:
+            return f"{float_to_str(self.distance)}yd"
         if self.distance < 1000:
             return f"{float_to_str(self.distance)}mtr"
         return f"{float_to_str(self.distance / 1000)}km"
@@ -386,7 +388,7 @@ class Step:  # pylint: disable=too-many-instance-attributes
         """Convert Step to string representation."""
         return self._to_str()
 
-    def _to_str(self, nested: bool = False) -> str:  # pylint: disable=too-many-branches
+    def _to_str(self, nested: bool = False, pace_units=None) -> str:  # pylint: disable=too-many-branches
         """Convert Step to string representation.
 
         Many branches are required to format all optional fields and handle different step types.
@@ -406,7 +408,7 @@ class Step:  # pylint: disable=too-many-instance-attributes
             if self.duration is not None:
                 val += f"- {self._format_duration()} "
             elif self.distance is not None:
-                val += f"- {self._format_distance()} "
+                val += f"- {self._format_distance(pace_units=pace_units)} "
 
             if self.freeride:
                 val += "freeride "
@@ -433,7 +435,7 @@ class Step:  # pylint: disable=too-many-instance-attributes
             for step in self.steps:
                 # Using _to_str instead of __str__ because we need the nested=True arg;
                 # __str__ can't accept extra parameters.
-                val += "\n" + step._to_str(nested=True)  # pylint: disable=protected-access
+                val += "\n" + step._to_str(nested=True, pace_units=pace_units)  # pylint: disable=protected-access
             val += "\n"
         elif not nested and (self.warmup or self.cooldown):
             val += "\n"
@@ -587,5 +589,5 @@ class WorkoutDoc:  # pylint: disable=too-many-instance-attributes
             val += f"{self.description}\n"
         if self.steps is not None:
             for step in self.steps:
-                val += step.__str__() + "\n"
+                val += step._to_str(pace_units=self.pace_units) + "\n"  # pylint: disable=protected-access
         return val
